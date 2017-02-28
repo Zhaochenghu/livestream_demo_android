@@ -51,12 +51,41 @@ import cn.ucai.live.data.local.UserDao;
 import cn.ucai.live.data.model.model.NetDao;
 import cn.ucai.live.data.model.model.Result;
 import cn.ucai.live.ui.activity.ChatActivity;
+import cn.ucai.live.ui.activity.LoginActivity;
 import cn.ucai.live.ui.activity.MainActivity;
 import cn.ucai.live.utils.OnCompleteListener;
 import cn.ucai.live.utils.PreferenceManager;
 import cn.ucai.live.utils.ResultUtils;
 
 public class LiveHelper {
+    public void asyncGetCurrentUserInfo(Activity activity) {
+        NetDao.getUserInfoByUsername(activity, EMClient.getInstance().getCurrentUser(), new OnCompleteListener<String>() {
+            @Override
+            public void onSuccess(String s) {
+                if (s != null) {
+                    Log.e(TAG, "s=" + s);
+                    Result result = ResultUtils.getResultFromJson(s, User.class);
+                    Log.e(TAG, "result=" + result);
+                    if (result != null && result.isRetMsg()) {
+                        User user = (User) result.getRetData();
+                        Log.e(TAG, "user=" + user);
+                        if (user != null) {
+                            //sava user info to db
+                            LiveHelper.getInstance().saveAppContact(user);
+                            PreferenceManager.getInstance().setCurrentUserNick(user.getMUserNick());
+                            PreferenceManager.getInstance().setCurrentUserAvatar(user.getAvatar());
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onError(String error) {
+                Log.e(TAG, "error=" + error);
+            }
+        });
+    }
+
     /**
      * data sync listener
      */
