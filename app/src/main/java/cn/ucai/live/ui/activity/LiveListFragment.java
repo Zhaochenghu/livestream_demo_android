@@ -19,7 +19,7 @@ import cn.ucai.live.data.TestDataRepository;
 import com.bumptech.glide.Glide;
 import cn.ucai.live.R;
 
-import cn.ucai.live.data.model.LiveRoom;
+import cn.ucai.live.data.model.model.LiveRoom;
 import cn.ucai.live.ui.GridMarginDecoration;
 import java.util.List;
 

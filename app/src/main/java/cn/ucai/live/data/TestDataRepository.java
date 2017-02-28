@@ -1,7 +1,7 @@
 package cn.ucai.live.data;
 
 import cn.ucai.live.R;
-import cn.ucai.live.data.model.LiveRoom;
+import cn.ucai.live.data.model.model.LiveRoom;
 
 import java.util.ArrayList;
 import java.util.List;

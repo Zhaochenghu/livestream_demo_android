@@ -22,11 +22,11 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import cn.ucai.live.data.TestDataRepository;
-import cn.ucai.live.data.model.LiveSettings;
+import cn.ucai.live.data.model.model.LiveSettings;
 
 import cn.ucai.live.R;
 
-import cn.ucai.live.data.model.LiveRoom;
+import cn.ucai.live.data.model.model.LiveRoom;
 import cn.ucai.live.utils.Log2FileUtil;
 import com.hyphenate.EMValueCallBack;
 import com.hyphenate.chat.EMChatRoom;

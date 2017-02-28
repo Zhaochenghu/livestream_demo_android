@@ -12,7 +12,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
-import cn.ucai.live.data.model.LiveSettings;
+import cn.ucai.live.data.model.model.LiveSettings;
 
 import cn.ucai.live.R;
 import com.hyphenate.EMCallBack;

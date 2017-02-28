@@ -1,4 +1,4 @@
-package cn.ucai.live.data.model;
+package cn.ucai.live.data.model.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;

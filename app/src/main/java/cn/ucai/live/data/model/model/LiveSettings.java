@@ -1,4 +1,4 @@
-package cn.ucai.live.data.model;
+package cn.ucai.live.data.model.model;
 
 import android.content.Context;
 import android.content.SharedPreferences;
