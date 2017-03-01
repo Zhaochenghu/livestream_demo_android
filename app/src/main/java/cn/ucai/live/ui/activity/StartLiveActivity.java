@@ -1,5 +1,6 @@
 package cn.ucai.live.ui.activity;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.media.AudioManager;
 import android.os.Bundle;
@@ -28,8 +29,10 @@ import cn.ucai.live.R;
 
 import cn.ucai.live.data.model.model.LiveRoom;
 import cn.ucai.live.data.model.model.NetDao;
+import cn.ucai.live.utils.CommonUtils;
 import cn.ucai.live.utils.Log2FileUtil;
 import cn.ucai.live.utils.OnCompleteListener;
+import cn.ucai.live.utils.ResultUtils;
 
 import com.hyphenate.EMValueCallBack;
 import com.hyphenate.chat.EMChatRoom;
@@ -74,7 +77,7 @@ public class StartLiveActivity extends LiveBaseActivity
   private LiveSettings mSettings;
   private UStreamingProfile mStreamingProfile;
   UEasyStreaming.UEncodingType encodingType;
-
+  ProgressDialog pd;
   boolean isStarted;
 
   private Handler handler = new Handler() {
@@ -98,7 +101,7 @@ public class StartLiveActivity extends LiveBaseActivity
     chatroomId = TestDataRepository.getChatRoomId(EMClient.getInstance().getCurrentUser());
     anchorId = EMClient.getInstance().getCurrentUser();*/
    // usernameView.setText(anchorId);
-    //initEnv();
+    initEnv();
   }
 
   public void initEnv() {
@@ -177,14 +180,17 @@ public class StartLiveActivity extends LiveBaseActivity
    * 开始直播
    */
   @OnClick(R.id.btn_start) void startLive() {
-    createLive();
+      pd = new ProgressDialog(StartLiveActivity.this);
+      pd.setMessage("创建直播...");
+      pd.show();
+      createLive();
     //demo为了测试方便，只有指定的账号才能开启直播
     if (liveId == null) {
       return;
     }
   }
 
-  private void startLiveByUser(){
+  private void startLiveByCharRoom(){
       startContainer.setVisibility(View.INVISIBLE);
       //Utils.hideKeyboard(titleEdit);
       new Thread() {
@@ -229,18 +235,31 @@ public class StartLiveActivity extends LiveBaseActivity
           NetDao.createLive(StartLiveActivity.this, user, new OnCompleteListener<String>() {
               @Override
               public void onSuccess(String s) {
+                  boolean success = false;
+                  pd.dismiss();
                   if (s != null) {
-                      initLive("9374368071681");
-                      startLiveByUser();
+                     // List<String> ids = (List<String>) ResultUtils.getListResultFromJson(s, String.class);
+                      List<String> ids = ResultUtils.getEMResultFromJson(s, String.class);
+                      if (ids != null && ids.size() > 0) {
+                          success = true;
+                          initLive(ids.get(0));
+                          startLiveByCharRoom();
+                      }
                   }
-
+                  if (!success) {
+                      CommonUtils.showLongToast("创建失败！");
+                  }
               }
 
               @Override
               public void onError(String error) {
-
+                  pd.dismiss();
+                  CommonUtils.showLongToast("创建失败！" + error);
               }
           });
+      } else {
+          pd.dismiss();
+          CommonUtils.showLongToast("当前用户信息获取失败！");
       }
   }
 

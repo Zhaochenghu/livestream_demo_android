@@ -895,6 +895,7 @@ public class LiveHelper {
                            Log.e("main","asyncFetchContactsFromServer,s="+s);
                            if (s!=null){
                                Result result=ResultUtils.getListResultFromJson(s,User.class);
+                               //Result result= (Result) ResultUtils.getEMResultFromJson(s,User.class);
                                if (result!=null&&result.isRetMsg()){
                                    List<User> list= (List<User>) result.getRetData();
                                    if (list!=null&&list.size()>0){
