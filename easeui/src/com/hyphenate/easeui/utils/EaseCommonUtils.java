@@ -254,7 +254,7 @@ public class EaseCommonUtils {
 
     /**
      * \~chinese
-     * ÅÐ¶ÏÊÇ·ñÊÇÃâ´òÈÅµÄÏûÏ¢,Èç¹ûÊÇappÖÐÓ¦¸Ã²»Òª¸øÓÃ»§ÌáÊ¾ÐÂÏûÏ¢
+     *  ï¿½Ð¶ï¿½ï¿½Ç·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Åµï¿½ï¿½ï¿½Ï¢,ï¿½ï¿½ï¿½ï¿½ï¿½appï¿½ï¿½Ó¦ï¿½Ã²ï¿½Òªï¿½ï¿½ï¿½Ã»ï¿½ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½Ï¢
      * @param message
      * return
      *

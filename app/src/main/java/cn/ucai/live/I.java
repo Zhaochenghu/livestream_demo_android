@@ -206,6 +206,8 @@ public interface I {
 	String REQUEST_UPDATE_LOCATION 					= 		"updateLocation";
 	/** 客户端发送的分页下载附近的人的请求 */
 	String REQUEST_DOWNLOAD_LOCATION 				= 		"downloadLocation";
+	/** 客户端发送的更新用户地理位置信息的请求 */
+	String REQUEST_GET_ALL_CHATROOM 					= 		"live/getAllChatRoom";
 
 	String BACK_MAIN_FROM_CHAT 				= 		"back_main_from_chat";
 
