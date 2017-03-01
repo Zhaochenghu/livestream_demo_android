@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -66,6 +67,8 @@ public class LiveListFragment extends Fragment {
     private List<EMChatRoom> rooms;
     View footView;
     RecyclerView recyclerView;
+    SwipeRefreshLayout mSrl;
+    TextView mTvRefresh;
     GridLayoutManager gm;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -83,24 +86,33 @@ public class LiveListFragment extends Fragment {
       //  adapter = new LiveAdapter(getActivity(), TestDataRepository.getLiveRoomList());
 
         recyclerView = (RecyclerView) getView().findViewById(R.id.recycleview);
-     //   footView = getView().inflate(R.layout.em_listview_footer_view, recyclerView, false);
+       // footView = getView().inflate(R.layout.em_listview_footer_view, recyclerView, false);
 //        GridLayoutManager glm = (GridLayoutManager) recyclerView.getLayoutManager();
         gm = new GridLayoutManager(getContext(), 2);
         recyclerView.setLayoutManager(gm);
         recyclerView.setHasFixedSize(true);
         recyclerView.addItemDecoration(new GridMarginDecoration(6));
       //  recyclerView.setAdapter(adapter);
-      /*  footLoadingLayout = (LinearLayout) footView.findViewById(R.id.loading_layout);
-        footLoadingPB = (ProgressBar)footView.findViewById(R.id.loading_bar);
-        footLoadingText = (TextView) footView.findViewById(R.id.loading_text);
-        listView.addFooterView(footView, null, false);
-        footLoadingLayout.setVisibility(View.GONE);*/
+        mSrl = (SwipeRefreshLayout) getView().findViewById(R.id.srl);
+        mTvRefresh = (TextView) getView().findViewById(R.id.tv_refresh);
+
+        footLoadingLayout = (LinearLayout) getView().findViewById(R.id.loading_layout);
+        footLoadingPB = (ProgressBar)getView().findViewById(R.id.loading_bar);
+        footLoadingText = (TextView) getView().findViewById(R.id.loading_text);
+       // listView.addFooterView(footView, null, false);
+        footLoadingLayout.setVisibility(View.GONE);
         loadAndShowData();
         setListener();
 
     }
 
     private void setListener() {
+        setChatRoomChangeListener();
+        setPullUpListener();
+        setPullDownListener();
+    }
+
+    private void setChatRoomChangeListener() {
         EMClient.getInstance().chatroomManager().addChatRoomChangeListener(new EMChatRoomChangeListener() {
             @Override
             public void onChatRoomDestroyed(String roomId, String roomName) {
@@ -135,8 +147,20 @@ public class LiveListFragment extends Fragment {
 
             }
         });
-        setPullUpListener();
     }
+
+    private void setPullDownListener() {
+        mSrl.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                mSrl.setRefreshing(true);
+                mTvRefresh.setVisibility(View.VISIBLE);
+                cursor = null;
+                loadAndShowData();
+            }
+        });
+    }
+
     private void setPullUpListener(){
         recyclerView.setOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -152,6 +176,9 @@ public class LiveListFragment extends Fragment {
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
+
+                int firstPosition = gm.findFirstVisibleItemPosition();
+                mSrl.setEnabled(firstPosition == 0);
             }
         });
     }
@@ -167,15 +194,17 @@ public class LiveListFragment extends Fragment {
                             .chatroomManager().fetchPublicChatRoomsFromServer(pagenum, cursor);
 
                     final List<EMChatRoom> chatRooms = result.getData();
-                    L.e(TAG, "chatRooms=" + chatRooms.size());
+                    L.e(TAG, "chatRooms=" + chatRooms.size()+",isFirstLoading="+isFirstLoading);
                     getActivity().runOnUiThread(new Runnable() {
-
                         public void run() {
+                            mSrl.setRefreshing(false);
+                            mTvRefresh.setVisibility(View.GONE);
                             chatRoomList.addAll(chatRooms);
+                            L.e(TAG, "chatRooms=" + chatRooms.size());
                             if (chatRooms.size() != 0) {
                                 cursor = result.getCursor();
-                           //     if (chatRooms.size() == pagesize)
-                           //         footLoadingLayout.setVisibility(View.VISIBLE);
+                                if (chatRooms.size() == pagesize)
+                                    footLoadingLayout.setVisibility(View.VISIBLE);
                             }
                             if (isFirstLoading) {
                                // pb.setVisibility(View.INVISIBLE);
@@ -185,10 +214,11 @@ public class LiveListFragment extends Fragment {
                                // rooms.addAll(chatRooms);
                             } else {
                                 if (chatRooms.size() < pagesize) {
+                                    L.e(TAG, "No more data=");
                                     hasMoreData = false;
-                                  /*  footLoadingLayout.setVisibility(View.VISIBLE);
+                                    footLoadingLayout.setVisibility(View.VISIBLE);
                                     footLoadingPB.setVisibility(View.GONE);
-                                    footLoadingText.setText("No more data");*/
+                                    footLoadingText.setText("No more data");
                                 }
                                 adapter.notifyDataSetChanged();
                             }
@@ -200,9 +230,11 @@ public class LiveListFragment extends Fragment {
                     getActivity().runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
+                            mSrl.setRefreshing(false);
+                            mTvRefresh.setVisibility(View.GONE);
                             isLoading = false;
                            // pb.setVisibility(View.VISIBLE);
-                          //  footLoadingLayout.setVisibility(View.GONE);
+                            footLoadingLayout.setVisibility(View.GONE);
 
                         }
                     });
