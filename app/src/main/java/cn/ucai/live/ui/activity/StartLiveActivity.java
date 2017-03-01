@@ -27,12 +27,19 @@ import cn.ucai.live.data.model.model.LiveSettings;
 import cn.ucai.live.R;
 
 import cn.ucai.live.data.model.model.LiveRoom;
+import cn.ucai.live.data.model.model.NetDao;
 import cn.ucai.live.utils.Log2FileUtil;
+import cn.ucai.live.utils.OnCompleteListener;
+
 import com.hyphenate.EMValueCallBack;
 import com.hyphenate.chat.EMChatRoom;
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.easeui.controller.EaseUI;
+import com.hyphenate.easeui.domain.EaseUser;
+import com.hyphenate.easeui.domain.User;
+import com.hyphenate.easeui.utils.EaseUserUtils;
 import com.hyphenate.easeui.widget.EaseAlertDialog;
+import com.hyphenate.easeui.widget.EaseImageView;
 import com.ucloud.common.util.DeviceUtils;
 import com.ucloud.live.UEasyStreaming;
 import com.ucloud.live.UStreamingProfile;
@@ -47,6 +54,7 @@ public class StartLiveActivity extends LiveBaseActivity
   @BindView(R.id.container) UAspectFrameLayout mPreviewContainer;
   @BindView(R.id.start_container) RelativeLayout startContainer;
   @BindView(R.id.countdown_txtv) TextView countdownView;
+  @BindView(R.id.eiv_avatar) EaseImageView userAvatar;
   @BindView(R.id.tv_username) TextView usernameView;
   @BindView(R.id.btn_start) Button startBtn;
   @BindView(R.id.finish_frame) ViewStub liveEndLayout;
@@ -83,12 +91,14 @@ public class StartLiveActivity extends LiveBaseActivity
   @Override protected void onActivityCreate(@Nullable Bundle savedInstanceState) {
     setContentView(R.layout.activity_start_live);
     ButterKnife.bind(this);
+    EaseUserUtils.setAppUserAvatar(StartLiveActivity.this, EMClient.getInstance().getCurrentUser(), userAvatar);
+    EaseUserUtils.setAppUserNick(EMClient.getInstance().getCurrentUser(), usernameView);
 
-    liveId = TestDataRepository.getLiveRoomId(EMClient.getInstance().getCurrentUser());
+ /*   liveId = TestDataRepository.getLiveRoomId(EMClient.getInstance().getCurrentUser());
     chatroomId = TestDataRepository.getChatRoomId(EMClient.getInstance().getCurrentUser());
-    anchorId = EMClient.getInstance().getCurrentUser();
-    usernameView.setText(anchorId);
-    initEnv();
+    anchorId = EMClient.getInstance().getCurrentUser();*/
+   // usernameView.setText(anchorId);
+    //initEnv();
   }
 
   public void initEnv() {
@@ -167,40 +177,80 @@ public class StartLiveActivity extends LiveBaseActivity
    * 开始直播
    */
   @OnClick(R.id.btn_start) void startLive() {
+    createLive();
     //demo为了测试方便，只有指定的账号才能开启直播
     if (liveId == null) {
-      String[] anchorIds = TestDataRepository.anchorIds;
-      StringBuilder sb = new StringBuilder();
-      for (int i = 0; i < anchorIds.length; i++) {
-        sb.append(anchorIds[i]);
-        if (i != (anchorIds.length - 1)) sb.append(",");
-      }
-      new EaseAlertDialog(this, "demo中只有" + sb.toString() + "这几个账户才能开启直播").show();
       return;
     }
-
-    startContainer.setVisibility(View.INVISIBLE);
-    //Utils.hideKeyboard(titleEdit);
-    new Thread() {
-      public void run() {
-        int i = COUNTDOWN_START_INDEX;
-        do {
-          Message msg = Message.obtain();
-          msg.what = MSG_UPDATE_COUNTDOWN;
-          msg.arg1 = i;
-          handler.sendMessage(msg);
-          i--;
-          try {
-            Thread.sleep(COUNTDOWN_DELAY);
-          } catch (InterruptedException e) {
-            e.printStackTrace();
-          }
-        } while (i >= COUNTDOWN_END_INDEX);
-      }
-    }.start();
   }
 
-  /**
+  private void startLiveByUser(){
+      startContainer.setVisibility(View.INVISIBLE);
+      //Utils.hideKeyboard(titleEdit);
+      new Thread() {
+          public void run() {
+              int i = COUNTDOWN_START_INDEX;
+              do {
+                  Message msg = Message.obtain();
+                  msg.what = MSG_UPDATE_COUNTDOWN;
+                  msg.arg1 = i;
+                  handler.sendMessage(msg);
+                  i--;
+                  try {
+                      Thread.sleep(COUNTDOWN_DELAY);
+                  } catch (InterruptedException e) {
+                      e.printStackTrace();
+                  }
+              } while (i >= COUNTDOWN_END_INDEX);
+          }
+      }.start();
+      /*new Thread() {
+          public void run() {
+              int i = COUNTDOWN_START_INDEX;
+              do {
+                  Message msg = Message.obtain();
+                  msg.what = MSG_UPDATE_COUNTDOWN;
+                  msg.arg1 = i;
+                  handler.sendMessage(msg);
+                  i--;
+                  try {
+                      Thread.sleep(COUNTDOWN_DELAY);
+                  } catch (InterruptedException e) {
+                      e.printStackTrace();
+                  }
+              } while (i >= COUNTDOWN_END_INDEX);
+          }
+      }.start();*/
+  }
+
+  private void createLive() {
+      User user = EaseUserUtils.getAppUserInfo(EMClient.getInstance().getCurrentUser());
+      if (user != null) {
+          NetDao.createLive(StartLiveActivity.this, user, new OnCompleteListener<String>() {
+              @Override
+              public void onSuccess(String s) {
+                  if (s != null) {
+                      initLive("9374368071681");
+                      startLiveByUser();
+                  }
+
+              }
+
+              @Override
+              public void onError(String error) {
+
+              }
+          });
+      }
+  }
+
+    private void initLive(String id) {
+        liveId = id;
+        chatroomId = id;
+        initEnv();
+    }
+
+    /**
    * 关闭直播显示直播成果
    */
   @OnClick(R.id.img_bt_close) void closeLive() {
