@@ -80,7 +80,7 @@ public class ResultUtils {
         return  null;
     }
 
-    public static <T> List<T> getEMResultFromJson(String jsonStr, Class<T> clazz){
+/*    public static <T> List<T> getEMResultFromJson(String jsonStr, Class<T> clazz){
         try {
             JSONObject jsonObject = new JSONObject(jsonStr);
             if (!jsonObject.isNull("data")) {
@@ -88,11 +88,28 @@ public class ResultUtils {
                 if (array != null) {
                     List<T> list = new ArrayList<T>();
                     for (int i = 0; i < array.length(); i++) {
-                        JSONObject jsonObjectAvatar = array.getJSONObject(i);
-                        T ga = new Gson().fromJson(jsonObjectAvatar.toString(), clazz);
+                        JSONObject jsonGroupAvatar = array.getJSONObject(i);
+                        T ga = new Gson().fromJson(jsonGroupAvatar.toString(), clazz);
                         list.add(ga);
                     }
                     return list;
+                }
+            }
+            return null;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }*/
+
+    public static String getEMResultFromJson(String jsonStr){
+        try {
+            JSONObject jsonObject = new JSONObject(jsonStr);
+            if (!jsonObject.isNull("data")) {
+                JSONObject data = jsonObject.getJSONObject("data");
+                if (!data.isNull("id")) {
+                    String id = data.getString("id");
+                    return id;
                 }
 
             }

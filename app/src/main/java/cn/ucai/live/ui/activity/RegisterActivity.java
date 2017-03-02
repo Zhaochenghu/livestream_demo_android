@@ -32,18 +32,18 @@ public class RegisterActivity extends BaseActivity {
     private static final String TAG = RegisterActivity.class.getSimpleName();
 
     @BindView(R.id.email)
-    EditText username;
+    EditText etUsername;
     @BindView(R.id.password)
-    EditText password;
+    EditText etPassword;
     @BindView(R.id.usernick)
-    EditText usernick;
+    EditText etUsernick;
     @BindView(R.id.password_confirm)
-    EditText passwordconfirm;
+    EditText etPasswordConfirm;
     @BindView(R.id.register)
     Button register;
     @BindView(R.id.toolbar)
     Toolbar toolbar;
-    String etusername , etpassword, etusernick;
+    String username, password, usernick;
     ProgressDialog pd;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,36 +60,36 @@ public class RegisterActivity extends BaseActivity {
         register.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                etusername = username.getText().toString().trim();
-                etusernick = usernick.getText().toString().trim();
-                etpassword = password.getText().toString().trim();
-                String confirm_pwd = passwordconfirm.getText().toString().trim();
-                if (TextUtils.isEmpty(etusername)) {
+                username = etUsername.getText().toString().trim();
+                usernick = etUsernick.getText().toString().trim();
+                password = etPassword.getText().toString().trim();
+                String confirm_pwd = etPasswordConfirm.getText().toString().trim();
+                if (TextUtils.isEmpty(username)) {
                     CommonUtils.showLongToast(R.string.User_name_cannot_be_empty);
-                    username.requestFocus();
+                    etUsername.requestFocus();
                     return;
-                } else if (TextUtils.isEmpty(etusernick)) {
+                } else if (TextUtils.isEmpty(usernick)) {
                     CommonUtils.showLongToast(R.string.Nick_cannot_be_empty);
-                    usernick.requestFocus();
+                    etUsernick.requestFocus();
                     return;
-                } else if (TextUtils.isEmpty(etpassword)) {
+                } else if (TextUtils.isEmpty(password)) {
                     CommonUtils.showLongToast(R.string.Password_cannot_be_empty);
-                    password.requestFocus();
+                    etPassword.requestFocus();
                     return;
                 } else if (TextUtils.isEmpty(confirm_pwd)) {
                     CommonUtils.showLongToast(R.string.Confirm_password_cannot_be_empty);
-                    passwordconfirm.requestFocus();
+                    etPasswordConfirm.requestFocus();
                     return;
-                } else if (!etpassword.equals(confirm_pwd)) {
+                } else if (!password.equals(confirm_pwd)) {
                     //Toast.makeText(RegisterActivity.this, getResources().getString(R.string.Two_input_password), Toast.LENGTH_SHORT).show();
                     CommonUtils.showLongToast(R.string.Two_input_password);
                     return;
                 }
-               /* if(TextUtils.isEmpty(username.getText()) || TextUtils.isEmpty(password.getText())){
+               /* if(TextUtils.isEmpty(etUsername.getText()) || TextUtils.isEmpty(etPassword.getText())){
                     showToast("用户名和密码不能为空");
                     return;
                 }*/
-                if (!TextUtils.isEmpty(etusername) && !TextUtils.isEmpty(etpassword)) {
+                if (!TextUtils.isEmpty(username) && !TextUtils.isEmpty(password)) {
                     pd = new ProgressDialog(RegisterActivity.this);
                     pd.setMessage(getResources().getString(R.string.Is_the_registered));
                     pd.show();
@@ -101,7 +101,7 @@ public class RegisterActivity extends BaseActivity {
     }
     private void registerAppServer() {
         //注册自己的服务器的账号
-        NetDao.register(this, etusername, etusernick, etpassword, new OnCompleteListener<String>() {
+        NetDao.register(this, username, usernick, password, new OnCompleteListener<String>() {
             @Override
             public void onSuccess(String s) {
                 L.e(TAG, "register,s=" + s);
@@ -143,13 +143,13 @@ public class RegisterActivity extends BaseActivity {
             public void run() {
                 try {
                     // call method in SDK
-                    EMClient.getInstance().createAccount(etusername, MD5.getMessageDigest(etpassword));
+                    EMClient.getInstance().createAccount(username, MD5.getMessageDigest(password));
                     runOnUiThread(new Runnable() {
                         public void run() {
                             if (!RegisterActivity.this.isFinishing())
                                 pd.dismiss();
                             // save current user
-                            LiveHelper.getInstance().setCurrentUserName(etusername);
+                            LiveHelper.getInstance().setCurrentUserName(username);
                             showLongToast(getApplicationContext().getResources().getString(R.string.Registered_successfully));
                             startActivity(new Intent(RegisterActivity.this, LoginActivity.class));
                             finish();
@@ -183,7 +183,7 @@ public class RegisterActivity extends BaseActivity {
     }
 
     private void unRegisterAppServer() {
-        NetDao.unRegister(this, etusername, new OnCompleteListener<String>() {
+        NetDao.unRegister(this, username, new OnCompleteListener<String>() {
             @Override
             public void onSuccess(String result) {
                 L.e(TAG, "result=" + result);
