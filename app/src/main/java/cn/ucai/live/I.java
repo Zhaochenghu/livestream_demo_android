@@ -209,8 +209,10 @@ public interface I {
 	String REQUEST_DOWNLOAD_LOCATION 				= 		"downloadLocation";
 	/** 客户端发送的用户给主播赠送礼物的请求 */
 	String REQUEST_GET_ALL_CHATROOM 					= 		"live/getAllChatRoom";
-	/** 客户端发送的所有直播间信息的请求 */
+	/** 客户端创建直播间信息的请求 */
 	String REQUEST_CREATE_CHATROOM 					= 		"live/createChatRoom";
+	/** 客户端发送的删除直播间 */
+	String REQUEST_DELETE_CHATROOM 					= 		"live/deleteChatRoom";
 
 	String BACK_MAIN_FROM_CHAT 				= 		"back_main_from_chat";
 

@@ -196,12 +196,14 @@ public class StartLiveActivity extends LiveBaseActivity
    */
   @OnClick(R.id.btn_start) void startLive() {
     //demo为了测试方便，只有指定的账号才能开启直播
-    if (liveId == null && liveId.equals("")) {
-        L.e(TAG,"id is null");
-        CommonUtils.showLongToast("获取直播数据失败！");
-      return;
-    }
-      startLiveByCharRoom();
+      if (liveId == null && liveId.equals("")) {
+          pd = new ProgressDialog(StartLiveActivity.this);
+          pd.setMessage("创建直播...");
+          pd.show();
+          createLive();
+      } else {
+          startLiveByCharRoom();
+      }
   }
 
 
@@ -225,7 +227,7 @@ public class StartLiveActivity extends LiveBaseActivity
                       if (id != null) {
                           success = true;
                           L.e("startLive", "id=" + id);
-                          initLive(id);
+                          chatroomId = id;
                       }
                   }
                   if (!success) {
@@ -245,11 +247,6 @@ public class StartLiveActivity extends LiveBaseActivity
       }
   }
 
-    private void initLive(String id) {
-        liveId = id;
-        chatroomId = id;
-        initEnv();
-    }
 
   private void startLiveByCharRoom(){
       startContainer.setVisibility(View.INVISIBLE);
@@ -283,10 +280,25 @@ public class StartLiveActivity extends LiveBaseActivity
       finish();
       return;
     }
-    showConfirmCloseLayout();
+      removeLive();
+      showConfirmCloseLayout();
   }
 
-  @OnClick(R.id.img_bt_switch_voice) void toggleMicrophone(){
+    private void removeLive() {
+        NetDao.removeLive(StartLiveActivity.this, chatroomId, new OnCompleteListener<String>() {
+            @Override
+            public void onSuccess(String result) {
+                L.e(TAG, "removeLive,s=" + result);
+            }
+
+            @Override
+            public void onError(String error) {
+
+            }
+        });
+    }
+
+    @OnClick(R.id.img_bt_switch_voice) void toggleMicrophone(){
     AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
     if(audioManager.isMicrophoneMute()){
       audioManager.setMicrophoneMute(false);
