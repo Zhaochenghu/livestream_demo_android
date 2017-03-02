@@ -213,6 +213,8 @@ public interface I {
 	String REQUEST_CREATE_CHATROOM 					= 		"live/createChatRoom";
 	/** 客户端发送的删除直播间 */
 	String REQUEST_DELETE_CHATROOM 					= 		"live/deleteChatRoom";
+	/** 客户端发送的用户给主播送礼物的请求 */
+	String REQUEST_GIVING_GIFT                      =        "live/givingGifts";
 
 	String BACK_MAIN_FROM_CHAT 				= 		"back_main_from_chat";
 
