@@ -12,22 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
-import cn.ucai.live.I;
-import cn.ucai.live.LiveConstants;
-import cn.ucai.live.data.TestAvatarRepository;
-import cn.ucai.live.ui.widget.LiveLeftGiftView;
-import cn.ucai.live.ui.widget.PeriscopeLayout;
-import cn.ucai.live.ui.widget.RoomMessagesView;
 
-import com.bumptech.glide.Glide;
-import cn.ucai.live.R;
-
-import cn.ucai.live.ui.widget.BarrageLayout;
-import cn.ucai.live.utils.L;
-import cn.ucai.live.utils.Utils;
 import com.github.florent37.viewanimator.AnimationListener;
 import com.github.florent37.viewanimator.ViewAnimator;
 import com.hyphenate.EMCallBack;
@@ -43,10 +28,25 @@ import com.hyphenate.easeui.domain.User;
 import com.hyphenate.easeui.utils.EaseUserUtils;
 import com.hyphenate.exceptions.HyphenateException;
 import com.hyphenate.util.EMLog;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+import cn.ucai.live.I;
+import cn.ucai.live.LiveConstants;
+import cn.ucai.live.R;
+import cn.ucai.live.data.TestAvatarRepository;
+import cn.ucai.live.ui.widget.BarrageLayout;
+import cn.ucai.live.ui.widget.LiveLeftGiftView;
+import cn.ucai.live.ui.widget.PeriscopeLayout;
+import cn.ucai.live.ui.widget.RoomMessagesView;
+import cn.ucai.live.utils.L;
+import cn.ucai.live.utils.Utils;
 
 import static com.hyphenate.easeui.utils.EaseUserUtils.getAppUserInfo;
 
@@ -113,6 +113,7 @@ public abstract class LiveBaseActivity extends BaseActivity {
         leftGiftView.setVisibility(View.VISIBLE);
         leftGiftView.setAvatar(message.getFrom());
         leftGiftView.setName(message.getStringAttribute(I.User.NICK,message.getFrom()));
+        leftGiftView.setGift(message.getIntAttribute(LiveConstants.CMD_GIFT,0));
         leftGiftView.setTranslationY(0);
         ViewAnimator.animate(leftGiftView)
                 .alpha(0, 1)
@@ -156,6 +157,7 @@ public abstract class LiveBaseActivity extends BaseActivity {
         leftGiftView2.setVisibility(View.VISIBLE);
         leftGiftView2.setAvatar(message.getFrom());
         leftGiftView2.setName(nick);
+        leftGiftView2.setGift(message.getIntAttribute(LiveConstants.CMD_GIFT,0));
         leftGiftView2.setTranslationY(0);
         ViewAnimator.animate(leftGiftView2)
                 .alpha(0, 1)
@@ -303,7 +305,7 @@ public abstract class LiveBaseActivity extends BaseActivity {
         messageView.setMessageViewListener(new RoomMessagesView.MessageViewListener() {
           @Override public void onMessageSend(String content) {
             EMMessage message = EMMessage.createTxtSendMessage(content, chatroomId);
-            User user = getAppUserInfo(EMClient.getInstance().getCurrentUser());
+            User user = EaseUserUtils.getAppUserInfo(EMClient.getInstance().getCurrentUser());
             message.setAttribute(I.User.NICK,user.getMUserNick());
             if (messageView.isBarrageShow) {
               message.setAttribute(LiveConstants.EXTRA_IS_BARRAGE_MSG, true);
@@ -446,10 +448,18 @@ public abstract class LiveBaseActivity extends BaseActivity {
   @OnClick(R.id.present_image) void onPresentImageClick() {
     final RoomGiftListDialog dialog =
             RoomGiftListDialog.newInstance();
+    dialog.setGiftOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        int id = (int) v.getTag();
+        sendGiftMsg(dialog,id);
+      }
+    });
     dialog.show(getSupportFragmentManager(), "RoomGiftListDialog");
   }
 
-  private void sentGiftMsg(){
+  private void sendGiftMsg(RoomGiftListDialog dialog,int id){
+    dialog.dismiss();
     User user = getAppUserInfo(EMClient.getInstance().getCurrentUser());
     L.e(TAG,"send present,user="+user);
     EMMessage message = EMMessage.createSendMessage(EMMessage.Type.CMD);
@@ -457,6 +467,7 @@ public abstract class LiveBaseActivity extends BaseActivity {
     EMCmdMessageBody cmdMessageBody = new EMCmdMessageBody(LiveConstants.CMD_GIFT);
     message.addBody(cmdMessageBody);
     message.setAttribute(I.User.NICK,user.getMUserNick());
+    message.setAttribute(LiveConstants.CMD_GIFT,id);
     message.setChatType(EMMessage.ChatType.ChatRoom);
     EMClient.getInstance().chatManager().sendMessage(message);
     showLeftGiftVeiw(message);
