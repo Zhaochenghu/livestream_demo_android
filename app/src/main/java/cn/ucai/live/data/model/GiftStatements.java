@@ -10,9 +10,9 @@ public class GiftStatements {
     private Integer giftid;
 
     private Integer giftnum;
-    
+
     private String gdate;
-    
+
     public Integer getId() {
         return id;
     }
@@ -53,12 +53,12 @@ public class GiftStatements {
         this.giftnum = giftnum;
     }
 
-	public String getGdate() {
-		return gdate;
-	}
+    public String getGdate() {
+        return gdate;
+    }
 
-	public void setGdate(String gdate) {
-		this.gdate = gdate;
-	}
-    
+    public void setGdate(String gdate) {
+        this.gdate = gdate;
+    }
+
 }

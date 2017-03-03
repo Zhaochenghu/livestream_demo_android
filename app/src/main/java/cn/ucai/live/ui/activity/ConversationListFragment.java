@@ -66,7 +66,7 @@ public class ConversationListFragment extends Fragment implements EMMessageListe
 
   @Nullable @Override
   public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
-      @Nullable Bundle savedInstanceState) {
+                           @Nullable Bundle savedInstanceState) {
     View view = inflater.inflate(R.layout.fragment_conversation_list, container, false);
     unbinder = ButterKnife.bind(this, view);
     return view;
@@ -95,14 +95,14 @@ public class ConversationListFragment extends Fragment implements EMMessageListe
           ChatFragment chatFragment = ChatFragment.newInstance(conversationList.get(position).getUserName(), isNormalStyle);
           getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.message_container, chatFragment).addToBackStack(null).commit();
         } else {
-          startActivity(new Intent(getActivity(), ChatActivity.class).putExtra("etUsername", conversationList.get(position).getUserName()));
+          startActivity(new Intent(getActivity(), ChatActivity.class).putExtra("username", conversationList.get(position).getUserName()));
         }
       }
     });
   }
 
   @OnClick(R.id.close) void close(){
-      getActivity().getSupportFragmentManager().beginTransaction().detach(this).commit();
+    getActivity().getSupportFragmentManager().beginTransaction().detach(this).commit();
   }
 
   @Override
@@ -196,7 +196,7 @@ public class ConversationListFragment extends Fragment implements EMMessageListe
 
   private void addAnchorToConversation(Map<String, EMConversation> conversations) {
     final EMConversation conversation = EMClient.getInstance().chatManager().getConversation(anchorId,
-        EMConversation.EMConversationType.Chat, true);
+            EMConversation.EMConversationType.Chat, true);
   }
 
   /**

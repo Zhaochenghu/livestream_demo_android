@@ -1,4 +1,4 @@
-package cn.ucai.live.data.model.model;
+package cn.ucai.live.data.model;
 
 import java.io.Serializable;
 

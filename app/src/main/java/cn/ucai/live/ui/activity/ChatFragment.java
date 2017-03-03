@@ -31,7 +31,7 @@ import java.util.List;
  */
 public class ChatFragment extends Fragment implements EMMessageListener {
 
-  private static final String ARG_USERNAME = "etUsername";
+  private static final String ARG_USERNAME = "username";
   private static final String ARG_IS_NORMAL = "isNormalStyle";
 
   boolean isNormalStyle;
@@ -164,7 +164,7 @@ public class ChatFragment extends Fragment implements EMMessageListener {
 
   @Override
   public void onMessageReadAckReceived(List<EMMessage> messages) {
-      messageListView.refresh();
+    messageListView.refresh();
   }
 
   @Override

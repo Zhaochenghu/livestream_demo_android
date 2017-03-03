@@ -1,12 +1,13 @@
-package cn.ucai.live.data.model.model;
+package cn.ucai.live.data.model;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
 
-import cn.ucai.live.R;
 import com.ucloud.live.UEasyStreaming;
+
+import cn.ucai.live.R;
 
 
 public class LiveSettings {
@@ -33,7 +34,7 @@ public class LiveSettings {
         if(3 == type) {
             return  UEasyStreaming.UEncodingType.MEDIA_CODEC;
         }
-       return UEasyStreaming.UEncodingType.MEDIA_X264;
+        return UEasyStreaming.UEncodingType.MEDIA_X264;
     }
 
     public void setDecoderType(String type) {

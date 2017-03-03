@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cn.ucai.live.I;
-import cn.ucai.live.data.model.model.Result;
+import cn.ucai.live.data.model.Result;
 
 
 /**
@@ -80,47 +80,7 @@ public class ResultUtils {
         return  null;
     }
 
-/*    public static <T> List<T> getEMResultFromJson(String jsonStr, Class<T> clazz){
-        try {
-            JSONObject jsonObject = new JSONObject(jsonStr);
-            if (!jsonObject.isNull("data")) {
-                JSONArray array = jsonObject.getJSONArray("data");
-                if (array != null) {
-                    List<T> list = new ArrayList<T>();
-                    for (int i = 0; i < array.length(); i++) {
-                        JSONObject jsonGroupAvatar = array.getJSONObject(i);
-                        T ga = new Gson().fromJson(jsonGroupAvatar.toString(), clazz);
-                        list.add(ga);
-                    }
-                    return list;
-                }
-            }
-            return null;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
-    }*/
-
-    public static String getEMResultFromJson(String jsonStr){
-        try {
-            JSONObject jsonObject = new JSONObject(jsonStr);
-            if (!jsonObject.isNull("data")) {
-                JSONObject data = jsonObject.getJSONObject("data");
-                if (!data.isNull("id")) {
-                    String id = data.getString("id");
-                    return id;
-                }
-
-            }
-            return null;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-//    public static <T> Result getPageResultFromJson(String jsonStr,Class<T> clazz){
+    //    public static <T> Result getPageResultFromJson(String jsonStr,Class<T> clazz){
 //        Result result = new Result();
 //        try {
 //            JSONObject jsonObject = new JSONObject(jsonStr);
@@ -150,4 +110,30 @@ public class ResultUtils {
 //        }
 //        return  null;
 //    }
+    public static String getEMResultFromJson(String jsonStr){
+        try {
+            JSONObject jsonObject = new JSONObject(jsonStr);
+            if(!jsonObject.isNull("data")) {
+                JSONObject data = jsonObject.getJSONObject("data");
+                if (!data.isNull("id")){
+                    String id = data.getString("id");
+                    return id;
+                }
+//                JSONArray array = data.getJSONArray("data");
+//                if (array != null) {
+//                    List<T> list = new ArrayList<T>();
+//                    for (int i = 0; i < array.length(); i++) {
+//                        JSONObject jsonGroupAvatar = array.getJSONObject(i);
+//                        T ga = new Gson().fromJson(jsonGroupAvatar.toString(), clazz);
+//                        list.add(ga);
+//                    }
+//                    return list;
+//                }
+            }
+            return null;
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return  null;
+    }
 }

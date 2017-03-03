@@ -22,7 +22,7 @@ public class Log2FileUtil {
 	private String LOG_PATH_SDCARD_DIR; // log file path in sdcard
 
 	private SimpleDateFormat sdf = new SimpleDateFormat("MM-dd_HH-mm-ss");// log
-																				// name
+	// name
 
 	private Process process;
 
@@ -50,15 +50,15 @@ public class Log2FileUtil {
 			process.destroy();
 		}
 	}
-	
-	
+
+
 	//TBD: not work now... why??
 	public void clearLog() {
 		List<String> commandList = new ArrayList<String>();
 		commandList.add("rm");
 		commandList.add("-f");
 		commandList.add(LOG_PATH_SDCARD_DIR + "/ucloud*.log");
-		
+
 		try {
 			process = Runtime.getRuntime().exec(
 					commandList.toArray(new String[commandList.size()]));
@@ -94,7 +94,7 @@ public class Log2FileUtil {
 //		commandList.add("2048"); 
 //		commandList.add("-n");
 //		commandList.add("1");		
-		
+
 		try {
 			process = Runtime.getRuntime().exec(
 					commandList.toArray(new String[commandList.size()]));
@@ -105,7 +105,7 @@ public class Log2FileUtil {
 
 	/**
 	 * the path of the log file
-	 * 
+	 *
 	 * @return
 	 */
 	public String getLogPath() {

@@ -3,29 +3,31 @@ package cn.ucai.live.data.local;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import cn.ucai.live.LiveApplication;
-import cn.ucai.live.LiveConstants;
-import cn.ucai.live.data.model.Gift;
 
 import com.hyphenate.easeui.domain.EaseUser;
 import com.hyphenate.easeui.domain.User;
 import com.hyphenate.easeui.utils.EaseCommonUtils;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
+import cn.ucai.live.LiveApplication;
+import cn.ucai.live.LiveConstants;
+import cn.ucai.live.data.model.Gift;
+
 public class LiveDBManager {
     static private LiveDBManager dbMgr = new LiveDBManager();
     private DbOpenHelper dbHelper;
 
-    private LiveDBManager() {
+    private LiveDBManager(){
         dbHelper = DbOpenHelper.getInstance(LiveApplication.getInstance().getApplicationContext());
     }
 
-    public static synchronized LiveDBManager getInstance() {
-        if (dbMgr == null) {
+    public static synchronized LiveDBManager getInstance(){
+        if(dbMgr == null){
             dbMgr = new LiveDBManager();
         }
         return dbMgr;
@@ -43,9 +45,9 @@ public class LiveDBManager {
             for (EaseUser user : contactList) {
                 ContentValues values = new ContentValues();
                 values.put(UserDao.COLUMN_NAME_ID, user.getUsername());
-                if (user.getNick() != null)
+                if(user.getNick() != null)
                     values.put(UserDao.COLUMN_NAME_NICK, user.getNick());
-                if (user.getAvatar() != null)
+                if(user.getAvatar() != null)
                     values.put(UserDao.COLUMN_NAME_AVATAR, user.getAvatar());
                 db.replace(UserDao.TABLE_NAME, null, values);
             }
@@ -70,7 +72,7 @@ public class LiveDBManager {
                 user.setNick(nick);
                 user.setAvatar(avatar);
                 if (username.equals(LiveConstants.NEW_FRIENDS_USERNAME) || username.equals(LiveConstants.GROUP_USERNAME)
-                        || username.equals(LiveConstants.CHAT_ROOM) || username.equals(LiveConstants.CHAT_ROBOT)) {
+                        || username.equals(LiveConstants.CHAT_ROOM)|| username.equals(LiveConstants.CHAT_ROBOT)) {
                     user.setInitialLetter("");
                 } else {
                     EaseCommonUtils.setUserInitialLetter(user);
@@ -84,54 +86,52 @@ public class LiveDBManager {
 
     /**
      * delete a contact
-     *
      * @param username
      */
-    synchronized public void deleteContact(String username) {
+    synchronized public void deleteContact(String username){
         SQLiteDatabase db = dbHelper.getWritableDatabase();
-        if (db.isOpen()) {
+        if(db.isOpen()){
             db.delete(UserDao.TABLE_NAME, UserDao.COLUMN_NAME_ID + " = ?", new String[]{username});
         }
     }
 
     /**
      * save a contact
-     *
      * @param user
      */
-    synchronized public void saveContact(EaseUser user) {
+    synchronized public void saveContact(EaseUser user){
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(UserDao.COLUMN_NAME_ID, user.getUsername());
-        if (user.getNick() != null)
+        if(user.getNick() != null)
             values.put(UserDao.COLUMN_NAME_NICK, user.getNick());
-        if (user.getAvatar() != null)
+        if(user.getAvatar() != null)
             values.put(UserDao.COLUMN_NAME_AVATAR, user.getAvatar());
-        if (db.isOpen()) {
+        if(db.isOpen()){
             db.replace(UserDao.TABLE_NAME, null, values);
         }
     }
 
-    public void setDisabledGroups(List<String> groups) {
+    public void setDisabledGroups(List<String> groups){
         setList(UserDao.COLUMN_NAME_DISABLED_GROUPS, groups);
     }
 
-    public List<String> getDisabledGroups() {
+    public List<String>  getDisabledGroups(){
         return getList(UserDao.COLUMN_NAME_DISABLED_GROUPS);
     }
 
-    public void setDisabledIds(List<String> ids) {
+    public void setDisabledIds(List<String> ids){
         setList(UserDao.COLUMN_NAME_DISABLED_IDS, ids);
     }
 
-    public List<String> getDisabledIds() {
+    public List<String> getDisabledIds(){
         return getList(UserDao.COLUMN_NAME_DISABLED_IDS);
     }
 
-    synchronized private void setList(String column, List<String> strList) {
+    synchronized private void setList(String column, List<String> strList){
         StringBuilder strBuilder = new StringBuilder();
 
-        for (String hxid : strList) {
+        for(String hxid:strList){
             strBuilder.append(hxid).append("$");
         }
 
@@ -140,13 +140,13 @@ public class LiveDBManager {
             ContentValues values = new ContentValues();
             values.put(column, strBuilder.toString());
 
-            db.update(UserDao.PREF_TABLE_NAME, values, null, null);
+            db.update(UserDao.PREF_TABLE_NAME, values, null,null);
         }
     }
 
-    synchronized private List<String> getList(String column) {
+    synchronized private List<String> getList(String column){
         SQLiteDatabase db = dbHelper.getReadableDatabase();
-        Cursor cursor = db.rawQuery("select " + column + " from " + UserDao.PREF_TABLE_NAME, null);
+        Cursor cursor = db.rawQuery("select " + column + " from " + UserDao.PREF_TABLE_NAME,null);
         if (!cursor.moveToFirst()) {
             cursor.close();
             return null;
@@ -161,7 +161,7 @@ public class LiveDBManager {
 
         String[] array = strVal.split("$");
 
-        if (array.length > 0) {
+        if(array.length > 0){
             List<String> list = new ArrayList<String>();
             Collections.addAll(list, array);
             return list;
@@ -170,16 +170,12 @@ public class LiveDBManager {
         return null;
     }
 
-
-
-    synchronized public void closeDB() {
-        if (dbHelper != null) {
+    synchronized public void closeDB(){
+        if(dbHelper != null){
             dbHelper.closeDB();
         }
         dbMgr = null;
     }
-
-
 
 
     /**
@@ -190,21 +186,21 @@ public class LiveDBManager {
     synchronized public void saveAppContactList(List<User> contactList) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         if (db.isOpen()) {
-            db.delete(UserDao.TABLE_NAME, null, null);
+            db.delete(UserDao.USER_TABLE_NAME, null, null);
             for (User user : contactList) {
                 ContentValues values = new ContentValues();
                 values.put(UserDao.USER_COLUMN_NAME, user.getMUserName());
-                if (user.getMUserNick() != null)
+                if(user.getMUserNick() != null)
                     values.put(UserDao.USER_COLUMN_NAME_NICK, user.getMUserNick());
-                if (user.getMAvatarId() != null)
+                if(user.getMAvatarId() != null)
                     values.put(UserDao.USER_COLUMN_NAME_AVATAR_ID, user.getMAvatarId());
-                if (user.getMAvatarPath() != null)
+                if(user.getMAvatarPath() != null)
                     values.put(UserDao.USER_COLUMN_NAME_AVATAR_PATH, user.getMAvatarPath());
-                if (user.getMAvatarSuffix() != null)
+                if(user.getMAvatarSuffix() != null)
                     values.put(UserDao.USER_COLUMN_NAME_AVATAR_SUFFIX, user.getMAvatarSuffix());
-                if (user.getMAvatarType() != null)
+                if(user.getMAvatarType() != null)
                     values.put(UserDao.USER_COLUMN_NAME_AVATAR_TYPE, user.getMAvatarType());
-                if (user.getMAvatarLastUpdateTime() != null)
+                if(user.getMAvatarLastUpdateTime() != null)
                     values.put(UserDao.USER_COLUMN_NAME_AVATAR_UPDATE_TIME, user.getMAvatarLastUpdateTime());
                 db.replace(UserDao.USER_TABLE_NAME, null, values);
             }
@@ -240,39 +236,37 @@ public class LiveDBManager {
 
     /**
      * delete a contact
-     *
      * @param username
      */
-    synchronized public void deleteAppContact(String username) {
+    synchronized public void deleteAppContact(String username){
         SQLiteDatabase db = dbHelper.getWritableDatabase();
-        if (db.isOpen()) {
+        if(db.isOpen()){
             db.delete(UserDao.USER_TABLE_NAME, UserDao.USER_COLUMN_NAME + " = ?", new String[]{username});
         }
     }
 
     /**
      * save a contact
-     *
      * @param user
      */
-    synchronized public void saveAppContact(User user) {
+    synchronized public void saveAppContact(User user){
         SQLiteDatabase db = dbHelper.getWritableDatabase();
-        ContentValues values=new ContentValues();
-        values.put(UserDao.USER_COLUMN_NAME,user.getMUserName());
-        if (user.getMUserNick() != null)
+        ContentValues values = new ContentValues();
+        values.put(UserDao.USER_COLUMN_NAME, user.getMUserName());
+        if(user.getMUserNick() != null)
             values.put(UserDao.USER_COLUMN_NAME_NICK, user.getMUserNick());
-        if (user.getMAvatarId() != null)
+        if(user.getMAvatarId() != null)
             values.put(UserDao.USER_COLUMN_NAME_AVATAR_ID, user.getMAvatarId());
-        if (user.getMAvatarPath() != null)
+        if(user.getMAvatarPath() != null)
             values.put(UserDao.USER_COLUMN_NAME_AVATAR_PATH, user.getMAvatarPath());
-        if (user.getMAvatarSuffix() != null)
+        if(user.getMAvatarSuffix() != null)
             values.put(UserDao.USER_COLUMN_NAME_AVATAR_SUFFIX, user.getMAvatarSuffix());
-        if (user.getMAvatarType() != null)
+        if(user.getMAvatarType() != null)
             values.put(UserDao.USER_COLUMN_NAME_AVATAR_TYPE, user.getMAvatarType());
-        if (user.getMAvatarLastUpdateTime() != null)
+        if(user.getMAvatarLastUpdateTime() != null)
             values.put(UserDao.USER_COLUMN_NAME_AVATAR_UPDATE_TIME, user.getMAvatarLastUpdateTime());
-        if (db.isOpen()){
-            db.replace(UserDao.USER_TABLE_NAME,null,values);
+        if(db.isOpen()){
+            db.replace(UserDao.USER_TABLE_NAME, null, values);
         }
     }
 
@@ -287,13 +281,13 @@ public class LiveDBManager {
             db.delete(UserDao.GIFT_TABLE_NAME, null, null);
             for (Gift gift:giftList) {
                 ContentValues values = new ContentValues();
-                if (gift.getId() != null)
+                if(gift.getId() != null)
                     values.put(UserDao.GIFT_COLUMN_ID, gift.getId());
-                if (gift.getGname() != null)
+                if(gift.getGname() != null)
                     values.put(UserDao.GIFT_COLUMN_NAME, gift.getGname());
-                if (gift.getGurl() != null)
+                if(gift.getGurl() != null)
                     values.put(UserDao.GIFT_COLUMN_URL, gift.getGurl());
-                if (gift.getGprice() != null)
+                if(gift.getGprice() != null)
                     values.put(UserDao.GIFT_COLUMN_PRICE, gift.getGprice());
                 db.replace(UserDao.GIFT_TABLE_NAME, null, values);
             }
@@ -307,7 +301,7 @@ public class LiveDBManager {
      */
     synchronized public Map<Integer, Gift> getAppGiftList() {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
-        Map<Integer,Gift> gifts = new Hashtable<Integer, Gift>();
+        Map<Integer, Gift> gifts = new Hashtable<Integer, Gift>();
         if (db.isOpen()) {
             Cursor cursor = db.rawQuery("select * from " + UserDao.GIFT_TABLE_NAME /* + " desc" */, null);
             while (cursor.moveToNext()) {
@@ -322,7 +316,4 @@ public class LiveDBManager {
         }
         return gifts;
     }
-
 }
-
-

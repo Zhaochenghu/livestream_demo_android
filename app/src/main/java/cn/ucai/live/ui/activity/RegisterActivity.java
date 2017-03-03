@@ -10,18 +10,17 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import cn.ucai.live.I;
-import cn.ucai.live.LiveHelper;
-import cn.ucai.live.R;
-
 import com.hyphenate.EMError;
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.exceptions.HyphenateException;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import cn.ucai.live.data.model.model.NetDao;
-import cn.ucai.live.data.model.model.Result;
+import cn.ucai.live.I;
+import cn.ucai.live.LiveHelper;
+import cn.ucai.live.R;
+import cn.ucai.live.data.NetDao;
+import cn.ucai.live.data.model.Result;
 import cn.ucai.live.utils.CommonUtils;
 import cn.ucai.live.utils.L;
 import cn.ucai.live.utils.MD5;
@@ -43,8 +42,10 @@ public class RegisterActivity extends BaseActivity {
     Button register;
     @BindView(R.id.toolbar)
     Toolbar toolbar;
-    String username, password, usernick;
+
+    String username,usernick,password;
     ProgressDialog pd;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,41 +66,42 @@ public class RegisterActivity extends BaseActivity {
                 password = etPassword.getText().toString().trim();
                 String confirm_pwd = etPasswordConfirm.getText().toString().trim();
                 if (TextUtils.isEmpty(username)) {
-                    CommonUtils.showLongToast(R.string.User_name_cannot_be_empty);
+                    CommonUtils.showShortToast(R.string.User_name_cannot_be_empty);
                     etUsername.requestFocus();
                     return;
                 } else if (TextUtils.isEmpty(usernick)) {
-                    CommonUtils.showLongToast(R.string.Nick_cannot_be_empty);
+                    CommonUtils.showShortToast(R.string.User_nick_cannot_be_empty);
                     etUsernick.requestFocus();
                     return;
                 } else if (TextUtils.isEmpty(password)) {
-                    CommonUtils.showLongToast(R.string.Password_cannot_be_empty);
+                    CommonUtils.showShortToast(R.string.Password_cannot_be_empty);
                     etPassword.requestFocus();
                     return;
                 } else if (TextUtils.isEmpty(confirm_pwd)) {
-                    CommonUtils.showLongToast(R.string.Confirm_password_cannot_be_empty);
+                    CommonUtils.showShortToast(R.string.Confirm_password_cannot_be_empty);
                     etPasswordConfirm.requestFocus();
                     return;
                 } else if (!password.equals(confirm_pwd)) {
-                    //Toast.makeText(RegisterActivity.this, getResources().getString(R.string.Two_input_password), Toast.LENGTH_SHORT).show();
-                    CommonUtils.showLongToast(R.string.Two_input_password);
+                    CommonUtils.showShortToast(R.string.Two_input_password);
                     return;
                 }
-               /* if(TextUtils.isEmpty(etUsername.getText()) || TextUtils.isEmpty(etPassword.getText())){
-                    showToast("用户名和密码不能为空");
-                    return;
-                }*/
+//                if(TextUtils.isEmpty(etUsername.getText()) || TextUtils.isEmpty(etPassword.getText())){
+//                    showToast("用户名和密码不能为空");
+//                    return;
+//                }
                 if (!TextUtils.isEmpty(username) && !TextUtils.isEmpty(password)) {
                     pd = new ProgressDialog(RegisterActivity.this);
                     pd.setMessage(getResources().getString(R.string.Is_the_registered));
                     pd.show();
-                    registerAppServer();
-                }
 
+                    registerAppSever();
+
+                }
             }
         });
     }
-    private void registerAppServer() {
+
+    private void registerAppSever() {
         //注册自己的服务器的账号
         NetDao.register(this, username, usernick, password, new OnCompleteListener<String>() {
             @Override
@@ -150,14 +152,14 @@ public class RegisterActivity extends BaseActivity {
                                 pd.dismiss();
                             // save current user
                             LiveHelper.getInstance().setCurrentUserName(username);
-                            showLongToast(getApplicationContext().getResources().getString(R.string.Registered_successfully));
+                            showToast(getResources().getString(R.string.Registered_successfully));
                             startActivity(new Intent(RegisterActivity.this, LoginActivity.class));
                             finish();
                         }
                     });
                 } catch (final HyphenateException e) {
                     //取消注册
-                    unRegisterAppServer();
+                    unRegisterAppSever();
                     runOnUiThread(new Runnable() {
                         public void run() {
                             if (!RegisterActivity.this.isFinishing())
@@ -179,10 +181,9 @@ public class RegisterActivity extends BaseActivity {
                 }
             }
         }).start();
-
     }
 
-    private void unRegisterAppServer() {
+    private void unRegisterAppSever() {
         NetDao.unRegister(this, username, new OnCompleteListener<String>() {
             @Override
             public void onSuccess(String result) {

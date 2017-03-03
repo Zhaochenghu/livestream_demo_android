@@ -23,5 +23,5 @@ public class GiftCount extends Gift {
 	public void setSum(int sum) {
 		this.sum = sum;
 	}
-	
+
 }

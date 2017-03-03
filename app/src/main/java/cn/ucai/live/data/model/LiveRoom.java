@@ -1,4 +1,4 @@
-package cn.ucai.live.data.model.model;
+package cn.ucai.live.data.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -96,4 +96,16 @@ public class LiveRoom implements Parcelable {
             return new LiveRoom[size];
         }
     };
+
+    @Override
+    public String toString() {
+        return "LiveRoom{" +
+                "id='" + id + '\'' +
+                ", name='" + name + '\'' +
+                ", audienceNum=" + audienceNum +
+                ", cover=" + cover +
+                ", chatroomId='" + chatroomId + '\'' +
+                ", anchorId='" + anchorId + '\'' +
+                '}';
+    }
 }
