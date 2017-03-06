@@ -63,7 +63,17 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ui.activity.LoginActivity" />
-        <activity android:name=".ui.activity.SearchActivity"></activity>
+        <activity
+            android:name=".ui.activity.ChangeActivity"
+            android:parentActivityName=".ui.activity.ChangeActivity"
+            android:screenOrientation="portrait">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ui.activity.ChangeActivity"/>
+        </activity>
+        <activity android:name=".ui.activity.SearchActivity">
+
+        </activity>
 
 
         <!-- 设置环信应用的appkey -->
